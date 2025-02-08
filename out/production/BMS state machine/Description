@@ -1,0 +1,93 @@
+
+For operation states
+Normal > discharge > sleep
+
+General fault state test and warning fault state test are based on the same function,
+so I only tested them in Normal State tests.
+
+
+Self Test State:
+    1. Self test pass test
+    2. OV UV Test (MinVolt = 2.2, Max Volt = 4.5) (minVolt < 2.5, max Volt > 4.2)
+    3. not connected (connected = false)
+    4. OT, UT test (maxTemp = 65, minTemp, -29) (maxTemp > 60 , minTemp < -20)
+    5. If Charger on (Charger = true)
+    6. Power off (Power = false)
+
+Initialization state:
+    1. Success (initialization = true)
+    2. fail (initialization = false)
+
+Normal State Test:
+    1. Stay in normal State
+    2. transit to Charging state (charger = true)
+    3. transit to charging state fail
+        i: current over sleep current (current = 15) (current > 10 sleep current )
+        ii: Incorrect charging temperature zone (Max temp = 47) (maxTemp > 45, minTemp < 0)
+    4. Normal State transit sleep (Current = 5, sleepTime = 130)(current <= 10)
+    5. Transit sleep failed:
+        i: sleep time is not enough (time = 100) (time < 120)
+        ii: when current is larger than the sleep current (current = 20) (current > 10)
+    6. Normal to Discharging (sleep button = true, current = 5) (current <= 10 sleep current)
+    7. Discharging Fault
+        i. (current = 180, time = 11) (current <= 180, time > 10)
+        ii. (current = 120, time = 11, airCooling off)
+    8. General Fault Test:
+        UV, UT, OV, OT, Power off, disconnection
+    9. Warning State Test:
+        UV, UT, OV, OT
+
+
+Sleep State:
+    1. Sleep State Stay
+    2. Sleep to Charging (charger = true, current = 5) (current <= 10)
+    3. Sleep to Charging fail
+        i: Incorrect charging temperature zone (Max temp = 47) (maxTemp > 45, minTemp < 0)
+    4. Sleep to normal (current = 20) (current >= 10)
+    5. Sleep to normal with charger on (Normal > charging) so go to charging
+    6. Discharging State:
+        i: Time limit (time = 980 and current = 5) (time > 900(15 minutes) and current <= 10)
+        ii: manually pressed the button
+
+
+Discharging State Test:
+    1. Discharging State Stay
+    2. Discharging Fault Test:
+        i: Discharging current is higher than the standard discharging current(current = 30) (current > 20)
+        ii: Charging current sensed instead of discharging current (current = 25) (current > 10)
+    3. Discharging to Deep Sleep (SOC = 30) (SOC <= 40)
+    4.Manually pressed the button to wake up the system again
+
+Charging State Test:
+    1. Charging State Stay
+    2. Charging State Fault Test:
+        i: 120A, more than 10 seconds
+        ii: 20A, more without air cooling
+    3. Charging state to sleep state
+        i: SOC full (SOCFull = true)
+        ii: Charger Removed (Charger = false)
+        iii: Time Limit (A = 120A and time = 10)
+    4. Charging state to normal state (current = 20) (current > 10 the sleep current)
+    5. Charging State to Discharging State (Manually press the button)
+
+Warning State Test:
+    1. Warning State Stay
+    2. Back to previous State:
+        i. When the value is out of the danger zone
+        ii. Pressed the button to go back to the previous state
+    3. Warning to fault State:
+        i. Pass the time limit for the driver to react
+        ii. When the value reach the fault zone
+
+
+Fault State & Deep Sleep State:
+    1. Pressed the button to confirm the fault and go to deep sleep state;
+    2. button pressed to turn on the car, and the BMS transit to self-testing state
+
+
+
+
+
+
+
+
